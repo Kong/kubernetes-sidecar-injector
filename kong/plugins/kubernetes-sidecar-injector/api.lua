@@ -63,18 +63,18 @@ return {
   ["/kubernetes-sidecar-injector"] = {
     schema = admissionreviewschema,
     methods = {
-      POST = function(self, _, helpers)
+      POST = function(self)
         local plugin_config = get_plugin_configuration("kubernetes-sidecar-injector")
         -- 404 if plugin not found/enabled
         if not plugin_config then
-          return helpers.responses.send_HTTP_NOT_FOUND()
+          return kong.response.exit(404, { message = "Not found" })
         end
 
         -- TODO: only accept JSON?
         local args = self.args.post
         local ok, err = admissionreviewschema:validate(args)
         if not ok then
-          return helpers.responses.send_HTTP_BAD_REQUEST(err)
+          return kong.response.exit(422, { message = err })
         end
 
         local review_request = args.request
