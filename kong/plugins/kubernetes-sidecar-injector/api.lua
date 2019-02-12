@@ -159,6 +159,10 @@ return {
                          value = config.pg_password })
           tinsert(env, { name = "KONG_PG_DATABASE",
                          value = config.pg_database })
+          if config.pg_schema then
+            tinsert(env, { name = "KONG_PG_SCHEMA",
+                           value = config.pg_schema })
+          end
           tinsert(env, { name = "KONG_PG_SSL",
                          value = config.pg_ssl and "ON" or "OFF" })
           tinsert(env, { name = "KONG_PG_SSL_VERIFY",
