@@ -1,8 +1,9 @@
 package = "kong-plugin-kubernetes-sidecar-injector"
-version = "scm-0"
+version = "0.1.0-0"
 
 source = {
-	url = "git+https://github.com/kong/kubernetes-sidecar-injector.git";
+	url = "https://github.com/kong/kubernetes-sidecar-injector/archive/v0.1.0.zip";
+	dir = "kubernetes-sidecar-injector-0.1.0";
 }
 
 description = {
@@ -14,7 +15,6 @@ description = {
 dependencies = {
 	"lua >= 5.1";
 	"lua-cjson";
-	"kong >= 1.0.2";
 }
 
 build = {
