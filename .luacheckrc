@@ -5,3 +5,4 @@ files["spec"] = {
 globals = {
 	"kong";
 }
+max_line_length = false

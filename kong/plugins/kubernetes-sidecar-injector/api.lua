@@ -8,7 +8,7 @@ local tinsert = table.insert
 local log_info = kong_pdk.log.info
 local encode_base64 = ngx.encode_base64
 
-local function skip_injection(plugin_config, review_request)
+local function skip_injection(plugin_config, review_request) -- luacheck: ignore 212
   local annotations = review_request.object.metadata.annotations
 
   if type(annotations) == "table" then
