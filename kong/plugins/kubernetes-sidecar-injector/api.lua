@@ -155,8 +155,10 @@ return {
                          value = string.format("%d", config.pg_timeout) })
           tinsert(env, { name = "KONG_PG_USER",
                          value = config.pg_user })
-          tinsert(env, { name = "KONG_PG_PASSWORD",
-                         value = config.pg_password })
+          if config.pg_password then
+            tinsert(env, { name = "KONG_PG_PASSWORD",
+                           value = config.pg_password })
+          end
           tinsert(env, { name = "KONG_PG_DATABASE",
                          value = config.pg_database })
           if config.pg_schema then
