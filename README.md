@@ -23,11 +23,10 @@ eval $(minikube docker-env)
 
 ## Building custom docker image
 
-
-The kubernetes sidecar injector plugin is not bundled in the Kong 1.0 docker image. Build and tag it with.
+The kubernetes sidecar injector plugin is not bundled in the Kong 1.0 docker image. Build and tag it with:
 
 ```
-docker build -t kong:kubernetes .
+docker build -t kong .
 ```
 
 You can then upload this to your docker repository with `docker push`, or if you can the above `minikube docker-env` command this will be loaded into your local kubernetes cluster.
@@ -65,7 +64,7 @@ kubectl apply -f resource_definitions/kong-control-plane.yaml
 
 ### Turn on kong plugins
 KONG_ADMIN_URL=$(minikube service -n kong kong-control-plane --url | head -n 1)
-curl $KONG_ADMIN_URL/plugins -d name=kubernetes-sidecar-injector -d config.image=kong:kubernetes
+curl $KONG_ADMIN_URL/plugins -d name=kubernetes-sidecar-injector
 
 ### Turn on sidecar injection
 cat <<EOF | kubectl create -f -
@@ -127,5 +126,5 @@ while true; do kubectl logs -n kong -f $(kubectl get pods -l app=kong-control-pl
 ### Working on the plugin
 
 ```
-docker build . -t kong:kubernetes && kubectl -n kong delete $(kubectl get pods -l app=kong-control-plane -n kong -o name)
+docker build . -t kong && kubectl -n kong delete $(kubectl get pods -l app=kong-control-plane -n kong -o name)
 ```

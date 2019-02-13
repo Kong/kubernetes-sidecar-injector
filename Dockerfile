@@ -1,4 +1,4 @@
-FROM kong:1.0.3-alpine
+FROM kong
 
 COPY kong/ /usr/local/share/lua/5.1/kong/
 

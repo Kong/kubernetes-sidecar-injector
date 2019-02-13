@@ -1,7 +1,10 @@
 local BasePlugin = require "kong.plugins.base_plugin"
 
-local K8SHandler = BasePlugin:extend()
+local Handler = BasePlugin:extend()
 
-K8SHandler.VERSION = "scm"
+Handler.VERSION = "scm"
 
-return K8SHandler
+-- priority doesn't matter, just need to pick something unique for kong tests
+Handler.PRIORITY = 1006
+
+return Handler
