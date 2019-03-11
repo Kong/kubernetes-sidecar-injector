@@ -1,9 +1,9 @@
 package = "kong-plugin-kubernetes-sidecar-injector"
-version = "0.1.0-0"
+version = "0.1.1-0"
 
 source = {
-	url = "https://github.com/kong/kubernetes-sidecar-injector/archive/v0.1.0.zip";
-	dir = "kubernetes-sidecar-injector-0.1.0";
+	url = "https://github.com/kong/kubernetes-sidecar-injector/archive/v0.1.1.zip";
+	dir = "kubernetes-sidecar-injector-0.1.1";
 }
 
 description = {
