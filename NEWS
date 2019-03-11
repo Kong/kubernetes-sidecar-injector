@@ -1,3 +1,8 @@
+UNRELEASED
+
+  - Add `name` to the plugin handler to make Kong logs more readable
+
+
 0.1.0 - 2019-02-13
 
   - Initial release
