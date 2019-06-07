@@ -1,4 +1,4 @@
-UNRELEASED
+0.2.0 - 2019-06-07
 
   - Remove `BasePlugin` dependency (not needed anymore)
 

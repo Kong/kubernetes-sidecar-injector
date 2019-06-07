@@ -1,9 +1,9 @@
 package = "kong-plugin-kubernetes-sidecar-injector"
-version = "0.1.1-0"
+version = "0.2.0-0"
 
 source = {
-	url = "https://github.com/kong/kubernetes-sidecar-injector/archive/v0.1.1.zip";
-	dir = "kubernetes-sidecar-injector-0.1.1";
+	url = "https://github.com/kong/kubernetes-sidecar-injector/archive/v0.2.0.zip";
+	dir = "kubernetes-sidecar-injector-0.2.0";
 }
 
 description = {
@@ -14,7 +14,7 @@ description = {
 
 dependencies = {
 	"lua >= 5.1";
-	"lua-cjson";
+	--"lua-cjson"; -- kong comes with openresty forked lua-cjson
 }
 
 build = {
