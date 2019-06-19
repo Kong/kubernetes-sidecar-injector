@@ -22,19 +22,41 @@ eval $(minikube docker-env)
 
 ## Setup Kong
 
-```
 ### Run Kong on k8s
+
+```
 git clone https://github.com/Kong/kong-dist-kubernetes.git
 cd kong-dist-kubernetes
 make run_<postgres|cassandra>
+```
+
+or
+
+```
+kubectl apply -f https://raw.githubusercontent.com/Kong/kong-dist-kubernetes/master/kong-namespace.yaml
+curl -fsSL https://raw.githubusercontent.com/Kong/kong-dist-kubernetes/master/setup_certificate.sh | bash
+kubectl -n kong apply -f https://raw.githubusercontent.com/Kong/kong-dist-kubernetes/master/postgres.yaml
+kubectl -n kong apply -f https://raw.githubusercontent.com/Kong/kong-dist-kubernetes/master/kong-control-plane-postgres.yaml
+kubectl -n kong apply -f https://raw.githubusercontent.com/Kong/kong-dist-kubernetes/master/kong-ingress-data-plane-postgres.yaml
+```
+
+Wait for the Kong control and data planes to be running
+
+```
 kubectl -n kong get all
+```
 
 ### Turn on kong plugins
 
-kubectl port-forward -n kong svc/kong-control-plane 8001:8001 &
-curl localhost:8001/plugins -d name=kubernetes-sidecar-injector
+```
+export HOST=$(kubectl get nodes --namespace default -o jsonpath='{.items[0].status.addresses[0].address}')
+export ADMIN_PORT=$(kubectl get svc --namespace kong kong-control-plane  -o jsonpath='{.spec.ports[0].nodePort}')
+curl $HOST:$ADMIN_PORT/plugins -d name=kubernetes-sidecar-injector
+```
 
 ### Turn on sidecar injection
+
+```
 cat <<EOF | kubectl create -f -
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
@@ -63,6 +85,12 @@ webhooks:
 EOF
 ```
 
+or
+
+```
+curl -fsSL https://raw.githubusercontent.com/Kong/kong-dist-kubernetes/master/setup_sidecar_injector.sh | bash
+```
+
 Going forward any pod's that start get a Kong sidecar automatically injected 
 which all data from the containers of that pod will flow through
 
@@ -77,13 +105,6 @@ Every pod has an additional Kong docker dataplane image running
 ```
 NAME                                  READY   STATUS    RESTARTS   AGE
 pod/details-v1-5df567f4f6-vfj5z       2/2     Running   0          2m53
-```
-## Cleanup
-
-```
-cd kong-dist-kubernetes
-make clean
-pkill -f port-forward
 ```
 
 ## Debugging
