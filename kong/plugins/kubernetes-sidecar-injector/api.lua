@@ -4,9 +4,16 @@ local kong_pdk = require "kong.pdk".new({}, 1)
 local k8s_typedefs = require "kong.plugins.kubernetes-sidecar-injector.typedefs"
 local get_plugin_configuration = require "kong.plugins.kubernetes-sidecar-injector.config".get_plugin_configuration
 
+
+local kong = kong
+local fmt = string.format
+local type = type
+local pairs = pairs
+local tconcat = table.concat
 local tinsert = table.insert
 local log_info = kong_pdk.log.info
 local encode_base64 = ngx.encode_base64
+
 
 local function skip_injection(plugin_config, review_request) -- luacheck: ignore 212
   local annotations = review_request.object.metadata.annotations
@@ -135,11 +142,11 @@ return {
           -- disable admin interface in data plane
           { name = "KONG_ADMIN_LISTEN", value = "off" },
           { name = "KONG_PROXY_LISTEN", value =
-            string.format("0.0.0.0:%d transparent", plugin_config.http_port) .. "," ..
-            string.format("0.0.0.0:%d ssl transparent", plugin_config.https_port)
+            fmt("0.0.0.0:%d transparent", plugin_config.http_port) .. "," ..
+            fmt("0.0.0.0:%d ssl transparent", plugin_config.https_port)
           },
           { name = "KONG_STREAM_LISTEN", value =
-            string.format("0.0.0.0:%d transparent", plugin_config.stream_port)
+            fmt("0.0.0.0:%d transparent", plugin_config.stream_port)
           },
           { name = "KONG_PROXY_ACCESS_LOG", value = "/dev/stdout" },
           { name = "KONG_PROXY_ERROR_LOG", value = "/dev/stderr" },
@@ -150,9 +157,9 @@ return {
           tinsert(env, { name = "KONG_PG_HOST",
                          value = config.pg_host })
           tinsert(env, { name = "KONG_PG_PORT",
-                         value = string.format("%d", config.pg_port) })
+                         value = fmt("%d", config.pg_port) })
           tinsert(env, { name = "KONG_PG_TIMEOUT",
-                         value = string.format("%d", config.pg_timeout) })
+                         value = fmt("%d", config.pg_timeout) })
           tinsert(env, { name = "KONG_PG_USER",
                          value = config.pg_user })
           if config.pg_password then
@@ -173,11 +180,11 @@ return {
           tinsert(env, { name = "KONG_CASSANDRA_USERNAME",
                          value = config.cassandra_username })
           tinsert(env, { name = "KONG_CASSANDRA_PORT",
-                         value = string.format("%d", config.cassandra_port) })
+                         value = fmt("%d", config.cassandra_port) })
           tinsert(env, { name = "KONG_CASSANDRA_LB_POLICY",
                          value = config.cassandra_lb_policy })
           tinsert(env, { name = "KONG_CASSANDRA_DATA_CENTERS",
-                         value = table.concat(config.cassandra_data_centers, ",") })
+                         value = tconcat(config.cassandra_data_centers, ",") })
           tinsert(env, { name = "KONG_CASSANDRA_SSL",
                          value = config.cassandra_ssl and "ON" or "OFF" })
           tinsert(env, { name = "KONG_CASSANDRA_CONSISTENCY",
@@ -185,13 +192,13 @@ return {
           tinsert(env, { name = "KONG_CASSANDRA_REPL_STRATEGY",
                          value = config.cassandra_repl_strategy })
           tinsert(env, { name = "KONG_CASSANDRA_CONTACT_POINTS",
-                         value = table.concat(config.cassandra_contact_points, ",") })
+                         value = tconcat(config.cassandra_contact_points, ",") })
           tinsert(env, { name = "KONG_CASSANDRA_SCHEMA_CONSENSUS_TIMEOUT",
-                         value = string.format("%d", config.cassandra_schema_consensus_timeout) })
+                         value = fmt("%d", config.cassandra_schema_consensus_timeout) })
           tinsert(env, { name = "KONG_CASSANDRA_REPL_FACTOR",
-                         value = string.format("%d", config.cassandra_repl_factor) })
+                         value = fmt("%d", config.cassandra_repl_factor) })
           tinsert(env, { name = "KONG_CASSANDRA_TIMEOUT",
-                         value = string.format("%d", config.cassandra_timeout) })
+                         value = fmt("%d", config.cassandra_timeout) })
           tinsert(env, { name = "KONG_CASSANDRA_SSL_VERIFY",
                          value = config.cassandra_ssl_verify and "ON" or "OFF" })
           tinsert(env, { name = "KONG_CASSANDRA_KEYSPACE",
