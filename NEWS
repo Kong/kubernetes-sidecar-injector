@@ -4,6 +4,8 @@ UNRELEASED
     that makes the validation more resilient to Kubernetes changes
     (see https://github.com/Kong/kubernetes-sidecar-injector/issues/7)
 
+  - Fix schema by adding `kind` and `apiVersion` to Pod schema
+    (see https://github.com/Kong/kubernetes-sidecar-injector/issues/7)
 
 0.2.0 - 2019-06-07
 
