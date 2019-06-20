@@ -2,7 +2,7 @@ local cjson = require "cjson"
 local Schema = require "kong.db.schema"
 local kong_pdk = require "kong.pdk".new({}, 1)
 local k8s_typedefs = require "kong.plugins.kubernetes-sidecar-injector.typedefs"
-local get_plugin_configuration = require "kong.plugins.kubernetes-sidecar-injector.config".get_plugin_configuration
+local load_configuration = require "kong.plugins.kubernetes-sidecar-injector.config"
 
 
 local kong = kong
@@ -71,7 +71,7 @@ return {
     schema = admissionreviewschema,
     methods = {
       POST = function(self)
-        local plugin_config = get_plugin_configuration("kubernetes-sidecar-injector")
+        local plugin_config = load_configuration("kubernetes-sidecar-injector")
         -- 404 if plugin not found/enabled
         if not plugin_config then
           return kong.response.exit(404, { message = "Not found" })
