@@ -8,13 +8,29 @@ local tinsert = table.insert
 local log_info = kong_pdk.log.info
 local encode_base64 = ngx.encode_base64
 
-local function skip_injection(plugin_config, review_request) -- luacheck: ignore 212
-  local annotations = review_request.object.metadata.annotations
 
-  if type(annotations) == "table" then
-    -- Behave similar to sidecar.istio.io/inject annotation
-    if annotations["k8s.konghq.com/sidecar-inject"] == "false" then
-      return true
+local function skip_injection(plugin_config, review_request)
+  if type(review_request)                 == "table" and
+     type(review_request.object)          == "table" and
+     type(review_request.object.metadata) == "table" then
+
+    local annotations = review_request.object.metadata.annotations
+
+    if type(annotations) == "table" then
+      -- Behave similar to sidecar.istio.io/inject annotation
+      if annotations["k8s.konghq.com/sidecar-inject"] == "false" then
+        return true
+      end
+    end
+
+    local namespace = review_request.object.metadata.namespace
+    if type(namespace) == "string" and
+       type(plugin_config.namespace_blacklist) == "table" then
+      for _, blacklisted_namespace in ipairs(plugin_config.namespace_blacklist) do
+        if blacklisted_namespace == namespace then
+          return true
+        end
+      end
     end
   end
 

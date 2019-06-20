@@ -28,6 +28,8 @@ return {
         { http_port = typedefs.port { default = 8000 } },
         { https_port = typedefs.port { default = 8443 } },
         { stream_port = typedefs.port { default = 7000 } }, -- should match initArgs default
+        { namespace_blacklist = { type = "array", elements = { type = "string" },
+                                  default = { "kube-system" } } },
     } } },
   },
 }
