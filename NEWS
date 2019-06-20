@@ -3,6 +3,7 @@ UNRELEASED
   - Fix api to call process_auto_fields on input data before validating,
     that makes the validation more resilient to Kubernetes changes
     (see https://github.com/Kong/kubernetes-sidecar-injector/issues/7)
+  - Fix api with nicer error reporting on object schema errors
 
   - Fix schema by adding `kind` and `apiVersion` to Pod schema
     (see https://github.com/Kong/kubernetes-sidecar-injector/issues/7)
