@@ -1,3 +1,10 @@
+UNRELEASED
+
+  - Fix api to call process_auto_fields on input data before validating,
+    that makes the validation more resilient to Kubernetes changes
+    (see https://github.com/Kong/kubernetes-sidecar-injector/issues/7)
+
+
 0.2.0 - 2019-06-07
 
   - Remove `BasePlugin` dependency (not needed anymore)

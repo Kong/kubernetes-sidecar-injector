@@ -9,12 +9,17 @@ local log_info = kong_pdk.log.info
 local encode_base64 = ngx.encode_base64
 
 local function skip_injection(plugin_config, review_request) -- luacheck: ignore 212
-  local annotations = review_request.object.metadata.annotations
+  if type(review_request)                 == "table" and
+     type(review_request.object)          == "table" and
+     type(review_request.object.metadata) == "table" then
 
-  if type(annotations) == "table" then
-    -- Behave similar to sidecar.istio.io/inject annotation
-    if annotations["k8s.konghq.com/sidecar-inject"] == "false" then
-      return true
+    local annotations = review_request.object.metadata.annotations
+
+    if type(annotations) == "table" then
+      -- Behave similar to sidecar.istio.io/inject annotation
+      if annotations["k8s.konghq.com/sidecar-inject"] == "false" then
+        return true
+      end
     end
   end
 
@@ -42,8 +47,7 @@ local admissionreviewschema = Schema.new {
         return nil, "unknown resource type (this controller only accepts v1 Pods)"
       end
 
-      local object = review_request.object
-
+      local object = podschema:process_auto_fields(review_request.object, "select", false)
       local ok, err = podschema:validate(object)
       if not ok then
         return nil, err
@@ -71,7 +75,7 @@ return {
         end
 
         -- TODO: only accept JSON?
-        local args = self.args.post
+        local args = admissionreviewschema:process_auto_fields(self.args.post, "select", false)
         local ok, err = admissionreviewschema:validate(args)
         if not ok then
           return kong.response.exit(422, { message = err })
