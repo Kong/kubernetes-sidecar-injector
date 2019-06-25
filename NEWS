@@ -1,4 +1,4 @@
-UNRELEASED
+0.2.1 - 2019-06-25
 
   - Fix api to call process_auto_fields on input data before validating,
     that makes the validation more resilient to Kubernetes changes
