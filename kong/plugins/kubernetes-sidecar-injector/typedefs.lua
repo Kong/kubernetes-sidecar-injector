@@ -134,6 +134,8 @@ local Pod = Schema.define { type = "record", fields = {
   { metadata = ObjectMeta },
   { spec = PodSpec },
   { status = Status },
+  { kind = { type = "string" } },
+  { apiVersion = { type = "string" } },
 } }
 
 

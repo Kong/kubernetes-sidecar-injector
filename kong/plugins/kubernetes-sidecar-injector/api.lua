@@ -5,6 +5,7 @@ local k8s_typedefs = require "kong.plugins.kubernetes-sidecar-injector.typedefs"
 local get_plugin_configuration = require "kong.plugins.kubernetes-sidecar-injector.config".get_plugin_configuration
 
 local tinsert = table.insert
+local tostring = tostring
 local log_info = kong_pdk.log.info
 local encode_base64 = ngx.encode_base64
 
@@ -50,7 +51,8 @@ local admissionreviewschema = Schema.new {
       local object = podschema:process_auto_fields(review_request.object, "select", false)
       local ok, err = podschema:validate(object)
       if not ok then
-        return nil, err
+        local err_t = kong.db.errors:schema_violation({ object = err })
+        return nil, tostring(err_t)
       end
 
       if type(object.spec) ~= "table" then
