@@ -1,0 +1,10 @@
+dist: xenial
+sudo: false
+
+language: generic
+
+install:
+  - make setup_tests
+  - cd kong-build-tools && make setup_tests
+script:
+  - make test
