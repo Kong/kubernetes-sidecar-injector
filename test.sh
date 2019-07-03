@@ -1,25 +1,19 @@
 #!/bin/bash
 
-### Setup a ssl certificate
-cat <<EOF | kubectl create -f -
-apiVersion: certificates.k8s.io/v1beta1
-kind: CertificateSigningRequest
-metadata:
-  name: kong-kong-admin.kong.svc
-spec:
-  request: $(openssl req -new -nodes -batch -keyout privkey.pem -subj /CN=kong-kong-admin.kong.svc | base64 | tr -d '\n')
-  usages:
-  - digital signature
-  - key encipherment
-  - server auth
-EOF
-kubectl certificate approve kong-kong-admin.kong.svc
-kubectl -n kong create secret tls kong-kong-admin.kong.svc --key=privkey.pem --cert=<(kubectl get csr kong-kong-admin.kong.svc -o jsonpath='{.status.certificate}' | base64 --decode)
-kubectl delete csr kong-kong-admin.kong.svc
-rm privkey.pem
+while [[ "$(kubectl get deployment -n kong kong-ingress-data-plane | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  echo "waiting for Kong to be ready"
+  sleep 10;
+done
+
+HOST="$(kubectl get nodes --namespace default -o jsonpath='{.items[0].status.addresses[0].address}')"
+echo $HOST
+ADMIN_PORT=$(kubectl get svc --namespace kong kong-control-plane -o jsonpath='{.spec.ports[0].nodePort}')
+echo $ADMIN_PORT
+
+curl http://$HOST:$ADMIN_PORT/plugins -d name=kubernetes-sidecar-injector -d config.image=localhost:5000/kong-sidecar-injector
 
 ### Turn on sidecar injection
-cat <<EOF | kubectl apply -f -
+cat <<EOF | kubectl create -f -
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
 metadata:
@@ -40,11 +34,10 @@ webhooks:
       - disabled
   clientConfig:
     service:
-      namespace: default
-      name: kong-kong-admin
+      namespace: kong
+      name: kong-control-plane
       path: /kubernetes-sidecar-injector
     caBundle: $(kubectl config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}')
 EOF
 
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.1/samples/bookinfo/platform/kube/bookinfo.yaml
-
