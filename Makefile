@@ -1,6 +1,6 @@
 export SHELL:=/bin/bash
 KONG_DIST_KUBERNETES_VERSION?=master
-KONG_BUILD_TOOLS_VERSION?=master
+KONG_BUILD_TOOLS_VERSION?=feat/k8s-sidecar-testing
 
 setup_tests:
 	-rm -rf kong-build-tools
