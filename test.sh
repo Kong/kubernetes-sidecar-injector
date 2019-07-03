@@ -11,6 +11,7 @@ ADMIN_PORT=$(kubectl get svc --namespace kong kong-control-plane -o jsonpath='{.
 echo $ADMIN_PORT
 
 curl http://$HOST:$ADMIN_PORT/plugins -d name=kubernetes-sidecar-injector -d config.image=localhost:5000/kong-sidecar-injector
+sleep 10;
 
 ### Turn on sidecar injection
 cat <<EOF | kubectl create -f -
@@ -40,10 +41,16 @@ webhooks:
     caBundle: $(kubectl config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.certificate-authority-data}')
 EOF
 
+sleep 10;
+
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.1/samples/bookinfo/platform/kube/bookinfo.yaml
+
+sleep 10;
 
 while [[ "$(kubectl get deployment details-v1 | tail -n +2 | awk '{print $4}')" != 1 ]]; do
   echo "waiting for bookinfo to be ready"
+  kubectl get all
+  kubectl get all -n kong
   kubectl get deployment details-v1
   kubectl logs -n kube-system pod/kube-apiserver-minikube
   kubectl logs -n kube-system pod/kube-controller-manager-minikube
