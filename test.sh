@@ -49,11 +49,7 @@ sleep 10;
 
 while [[ "$(kubectl get deployment details-v1 | tail -n +2 | awk '{print $4}')" != 1 ]]; do
   echo "waiting for bookinfo to be ready"
-  kubectl get all
-  kubectl get all -n kong
-  kubectl get deployment details-v1
-  kubectl logs -n kube-system pod/kube-apiserver-minikube
-  kubectl logs -n kube-system pod/kube-controller-manager-minikube
+
   sleep 10;
 done
 
