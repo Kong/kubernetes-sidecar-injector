@@ -45,6 +45,9 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.1/sampl
 while [[ "$(kubectl get deployment details-v1 | tail -n +2 | awk '{print $4}')" != 1 ]]; do
   echo "waiting for bookinfo to be ready"
   kubectl get deployment details-v1
+  kubectl logs -n kube-system pod/kube-apiserver-minikube
+  kubectl logs -n kube-system pod/kube-controller-manager-minikube
+  kubectl logs -n kong -f $(kubectl get pods -l app=kong-control-plane -n kong -o name)
   sleep 10;
 done
 
