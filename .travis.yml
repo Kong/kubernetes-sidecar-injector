@@ -3,8 +3,15 @@ sudo: false
 
 language: generic
 
-install:
+env:
+  global:
+    - CHANGE_MINIKUBE_NONE_USER=true
+    - MINIKUBE_WANTUPDATENOTIFICATION=false
+    - MINIKUBE_WANTREPORTERRORPROMPT=false
+    - MINIKUBE_HOME=$HOME
+
+before_install:
   - make setup_tests
-  - cd kong-build-tools && make setup_tests
+
 script:
   - make test

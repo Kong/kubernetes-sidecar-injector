@@ -41,3 +41,13 @@ webhooks:
 EOF
 
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.1/samples/bookinfo/platform/kube/bookinfo.yaml
+
+while [[ "$(kubectl get deployment details-v1 | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  echo "waiting for bookinfo to be ready"
+  sleep 10;
+done
+
+if [[ "$(kubectl get pods | grep details | awk '{print $2}')" != '2/2' ]]; then
+  exit 1
+fi
+
