@@ -44,6 +44,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.1/sampl
 
 while [[ "$(kubectl get deployment details-v1 | tail -n +2 | awk '{print $4}')" != 1 ]]; do
   echo "waiting for bookinfo to be ready"
+  kubectl get deployment details-v1
   sleep 10;
 done
 
