@@ -16,7 +16,7 @@ test:
 	cd kong-dist-kubernetes; \
 	git fetch; \
 	git reset --hard origin/$(KONG_DIST_KUBERNETES_VERSION)
-	kubectl apply -f https://raw.githubusercontent.com/Kong/kong-build-tools/master/kube-registry.yaml
+	kubectl apply -f https://raw.githubusercontent.com/Kong/kong-build-tools/$(KONG_BUILD_TOOLS_VERSION)/kube-registry.yaml
 	docker build -t localhost:5000/kong-sidecar-injector .
 	for i in {1..5}; do docker push localhost:5000/kong-sidecar-injector && break || sleep 15; done
 	cd kong-dist-kubernetes; \
