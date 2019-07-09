@@ -21,4 +21,4 @@ test:
 	cd kong-dist-kubernetes; \
 	sed -i -e 's/image: kong/image: localhost:5000\/kong-sidecar-injector/g' kong-*-postgres.yaml; \
 	$(MAKE) run_postgres
-	./test.sh
+	./test/test.sh
