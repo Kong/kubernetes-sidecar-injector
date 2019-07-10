@@ -1,0 +1,18 @@
+dist: xenial
+sudo: false
+
+language: generic
+
+env:
+  global:
+    - CHANGE_MINIKUBE_NONE_USER=true
+    - MINIKUBE_WANTUPDATENOTIFICATION=false
+    - MINIKUBE_WANTREPORTERRORPROMPT=false
+    - MINIKUBE_HOME=$HOME
+
+before_install:
+  - make setup_tests
+
+script:
+  - make test
+
