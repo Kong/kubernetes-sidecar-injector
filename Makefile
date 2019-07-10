@@ -14,6 +14,7 @@ setup_tests:
 	git reset --hard origin/"$(KONG_DIST_KUBERNETES_VERSION)"
 	kubectl apply -f kong-build-tools/kube-registry.yaml
 
+.PHONY: test
 test:
 	docker build -t localhost:5000/kong-sidecar-injector .
 	# Naive retry because the k8s docker registry sometimes fails
