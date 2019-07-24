@@ -1,17 +1,17 @@
 export SHELL:=/bin/bash
-KONG_DIST_KUBERNETES_VERSION?=master
-KONG_BUILD_TOOLS_VERSION?=master
+KONG_DIST_KUBERNETES_VERSION?=origin/master
+KONG_BUILD_TOOLS_VERSION?=148c8b6ba88c35d79571f04f95a889a5f2f1377e
 
 setup_tests:
 	-rm -rf kong-build-tools
 	git clone https://github.com/Kong/kong-build-tools.git
 	cd kong-build-tools; \
-	git reset --hard origin/"$(KONG_BUILD_TOOLS_VERSION)"; \
+	git reset --hard "$(KONG_BUILD_TOOLS_VERSION)"; \
 	$(MAKE) setup_tests
 	-rm -rf kong-dist-kubernetes
 	git clone https://github.com/Kong/kong-dist-kubernetes.git
 	cd kong-dist-kubernetes; \
-	git reset --hard origin/"$(KONG_DIST_KUBERNETES_VERSION)"
+	git reset --hard "$(KONG_DIST_KUBERNETES_VERSION)"
 	kubectl apply -f kong-build-tools/kube-registry.yaml
 
 .PHONY: test
