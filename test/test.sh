@@ -1,5 +1,13 @@
 #!/bin/bash
 
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+
+while [[ "$(kubectl get pod --all-namespaces | grep -v Running | grep -v Completed | wc -l)" != 1 ]]; do
+  kubectl get pod --all-namespaces -o wide
+  echo "waiting for K8s to be ready"
+  sleep 10;
+done
+
 while [[ "$(kubectl get deployment -n kong kong-ingress-data-plane | tail -n +2 | awk '{print $4}')" != 1 ]]; do
   echo "waiting for Kong to be ready"
   sleep 10;
@@ -30,4 +38,3 @@ done
 if [[ "$(kubectl get pods | grep details | awk '{print $2}')" != '2/2' ]]; then
   exit 1
 fi
-
