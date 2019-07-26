@@ -3,7 +3,6 @@
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 while [[ "$(kubectl get pod --all-namespaces | grep -v Running | grep -v Completed | wc -l)" != 1 ]]; do
-  kubectl get pod --all-namespaces -o wide
   echo "waiting for K8s to be ready"
   sleep 10;
 done
