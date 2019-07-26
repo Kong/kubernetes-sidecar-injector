@@ -1,6 +1,7 @@
 export SHELL:=/bin/bash
 KONG_DIST_KUBERNETES_VERSION?=origin/master
-KONG_BUILD_TOOLS_VERSION?=6ef3856ed563112eac7985aa665e32270d9441f0
+KONG_BUILD_TOOLS_VERSION?=76500d371afa4b4abb4cff5dc63ae1e2e6ff9e4a
+K8S_VERSION?=v1.15.0
 
 setup_tests:
 	curl -fsSL https://raw.githubusercontent.com/Kong/kong-build-tools/${KONG_BUILD_TOOLS_VERSION}/.ci/setup_kind.sh | bash
@@ -15,5 +16,6 @@ test:
 	kind load docker-image localhost:5000/kong-sidecar-injector
 	cd kong-dist-kubernetes; \
 	sed -i -e 's/image: kong/image: localhost:5000\/kong-sidecar-injector/g' kong-*-postgres.yaml; \
+	KUBECONFIG=`kind get kubeconfig-path --name="kind"` \
 	$(MAKE) run_postgres
 	./test/test.sh
