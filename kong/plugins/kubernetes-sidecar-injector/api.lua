@@ -37,6 +37,28 @@ local function skip_injection(plugin_config, review_request) -- luacheck: ignore
 end
 
 
+-- Removes unknown fields from the request (i.e. from more recent Kubernetes versions)
+-- NOTE: this is implemented in Kong 1.3.0 with `schema:process_auto_fields`, so this is here for prior releases
+local function remove_unknown_keys(schema, input)
+  if type(input) ~= "table" then
+    return input
+  end
+
+  local result = {}
+  for k, field in schema:each_field() do
+    local val = input[k]
+    if val ~= nil then
+      if field.type == "record" then
+        result[k] = remove_unknown_keys(Schema.new(field), val)
+      else
+        result[k] = val
+      end
+    end
+  end
+
+  return result
+end
+
 -- Refine schema to what we actually want to accept
 local podschema = Schema.new(k8s_typedefs.Pod)
 
@@ -83,8 +105,10 @@ return {
           return kong.response.exit(404, { message = "Not found" })
         end
 
+        local clean_args = remove_unknown_keys(admissionreviewschema,
+                                               self.args.post)
         -- TODO: only accept JSON?
-        local args = admissionreviewschema:process_auto_fields(self.args.post, "select", false)
+        local args = admissionreviewschema:process_auto_fields(clean_args, "select", false)
         local ok, err = admissionreviewschema:validate(args)
         if not ok then
           return kong.response.exit(422, { message = err })
