@@ -14,6 +14,11 @@ while [[ "$(kubectl get deployment -n kong kong-ingress-data-plane | tail -n +2 
   sleep 10;
 done
 
+while [[ "$(kubectl get deployment -n kong kong-control-plane | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  echo "waiting for Kong to be ready"
+  sleep 10;
+done
+
 HOST="$(kubectl get nodes --namespace default -o jsonpath='{.items[0].status.addresses[0].address}')"
 echo $HOST
 ADMIN_PORT=$(kubectl get svc --namespace kong kong-control-plane -o jsonpath='{.spec.ports[0].nodePort}')
