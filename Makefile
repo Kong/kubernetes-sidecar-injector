@@ -14,8 +14,10 @@ setup_tests:
 test:
 	docker build -t localhost:5000/kong-sidecar-injector .
 	kind load docker-image localhost:5000/kong-sidecar-injector
+	sleep 5 #k8s version 1.13 requires the two pauses
 	cd kong-dist-kubernetes; \
 	sed -i -e 's/image: kong/image: localhost:5000\/kong-sidecar-injector/g' kong-*-postgres.yaml; \
 	KUBECONFIG=`kind get kubeconfig-path --name="kind"` \
 	$(MAKE) run_postgres
+	sleep 5
 	./test/test.sh

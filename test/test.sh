@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 while [[ "$(kubectl get pod --all-namespaces | grep -v Running | grep -v Completed | wc -l)" != 1 ]]; do
