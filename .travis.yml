@@ -4,13 +4,18 @@ sudo: false
 language: generic
 
 env:
-  global:
-    - CHANGE_MINIKUBE_NONE_USER=true
-    - MINIKUBE_WANTUPDATENOTIFICATION=false
-    - MINIKUBE_WANTREPORTERRORPROMPT=false
-    - MINIKUBE_HOME=$HOME
+  matrix:
+    - K8S_VERSION=v1.15.0
+    - K8S_VERSION=v1.14.3
+    - K8S_VERSION=v1.13.7
+    - K8S_VERSION=v1.12.9
+    - K8S_VERSION=v1.11.10
+matrix:
+  allow_failures:
+    - env: K8S_VERSION=v1.12.9
+    - env: K8S_VERSION=v1.11.10
 
-before_install:
+before_script:
   - make setup_tests
 
 script:

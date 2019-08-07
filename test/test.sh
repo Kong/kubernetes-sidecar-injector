@@ -1,7 +1,46 @@
 #!/bin/bash
 
-while [[ "$(kubectl get deployment -n kong kong-ingress-data-plane | tail -n +2 | awk '{print $4}')" != 1 ]]; do
-  echo "waiting for Kong to be ready"
+set -e
+
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+
+counter=0
+while [[ "$(kubectl get pod --all-namespaces | grep -v Running | grep -v Completed | wc -l)" != 1 ]]; do
+  counter=$((counter + 1))
+  if [ "$counter" -gt "30" ]
+  then
+    exit 1
+  fi
+  kubectl get pod --all-namespaces -o wide
+  echo "waiting for K8s to be ready"
+  sleep 10;
+done
+
+pushd kong-dist-kubernetes; \
+make run_postgres; \
+popd
+
+counter=0
+while [[ "$(kubectl get deployment kong-control-plane -n kong | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  counter=$((counter + 1))
+  if [ "$counter" -gt "30" ]
+  then
+    exit 1
+  fi
+  echo "waiting for Kong control plane to be ready"
+  kubectl get pod --all-namespaces -o wide
+  sleep 10;
+done
+
+counter=0
+while [[ "$(kubectl get deployment kong-ingress-data-plane -n kong | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  counter=$((counter + 1))
+  if [ "$counter" -gt "30" ]
+  then
+    exit 1
+  fi
+  echo "waiting for Kong data plane to be ready"
+  kubectl get pod --all-namespaces -o wide
   sleep 10;
 done
 
@@ -30,4 +69,3 @@ done
 if [[ "$(kubectl get pods | grep details | awk '{print $2}')" != '2/2' ]]; then
   exit 1
 fi
-
