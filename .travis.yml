@@ -10,6 +10,10 @@ env:
     - K8S_VERSION=v1.13.7
     - K8S_VERSION=v1.12.9
     - K8S_VERSION=v1.11.10
+matrix:
+  allow_failures:
+    - env: K8S_VERSION=v1.12.9
+    - env: K8S_VERSION=v1.11.10
 
 before_script:
   - make setup_tests
